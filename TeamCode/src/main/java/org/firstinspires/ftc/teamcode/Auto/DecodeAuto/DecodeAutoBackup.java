@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode.Auto;
+package org.firstinspires.ftc.teamcode.Auto.DecodeAuto;
 
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -8,8 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name= "auto", group= "auto", preselectTeleOp = "teleDeepStable")
-public class DecodeAuto extends LinearOpMode {
+@Autonomous(name= "DecodeAutoBackup", preselectTeleOp = "DecodeTesting", group = "Decode")
+public class DecodeAutoBackup extends LinearOpMode {
 
     // declare drivetrain motors
     private DcMotorEx bl = null;
@@ -26,6 +27,9 @@ public class DecodeAuto extends LinearOpMode {
     private CRServo Ejector = null;
     private Servo EUS = null; //Emergency Unsticking Service
 
+    //declare sensors
+    private RevColorSensorV3 Storage = null;
+
     // declare speed constants (immutable)
     final double diagonalStrafePower = 0.7; //diagonal strafe speed
     final double strafeScalar = 1.0; //strafing speed
@@ -34,8 +38,8 @@ public class DecodeAuto extends LinearOpMode {
     final double IntakePower = 1;
 
     //declare position constants
-    final double EUSActivePos = 1;
-    final double EUSInactivePos = -1;
+    final double EUSActivePos = 0;
+    final double EUSInactivePos = 1;
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -55,6 +59,9 @@ public class DecodeAuto extends LinearOpMode {
         Ejector = hardwareMap.get(CRServo.class, "Ejector");
         EUS = hardwareMap.get(Servo.class,"EUS");
 
+        //init sensors
+        Storage = hardwareMap.get(RevColorSensorV3.class, "StorageSensor");
+
         //set zero power behavior (crazy)
         bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -68,18 +75,45 @@ public class DecodeAuto extends LinearOpMode {
         double rightStrafe;
         waitForStart();
 
+        runtime.reset();
+
         while (opModeIsActive()) {
 
+            resetMotorsAndTime();
 
+            EUS.setPosition(EUSInactivePos);
 
+            posForward(2000,2000);
+
+            stop(1);
+
+            requestOpModeStop(); //stops opmode
         }
     }
+
+    private void score() {
+        launch.setPower(0.75);
+
+        sleep(4000);
+
+        LeftIntake.setPower(1);
+        RightIntake.setPower(-1);
+        Ejector.setPower(-1);
+
+        sleep(3000);
+
+        launch.setPower(0);
+        LeftIntake.setPower(0);
+        RightIntake.setPower(0);
+        Ejector.setPower(0);
+    }
+
     private void posForward (double tps, int pos) {
 
         // tps = Ticks Per Second. (ie. position = 1000, tps = 500, will reach target position in 2s)
-        bl.setTargetPosition(pos);
+        bl.setTargetPosition(-pos);
+        fl.setTargetPosition(-pos);
         br.setTargetPosition(pos);
-        fl.setTargetPosition(pos);
         fr.setTargetPosition(pos);
 
         enablePos();
@@ -97,8 +131,8 @@ public class DecodeAuto extends LinearOpMode {
     }
     private void posTurnRight (double tps, int pos) {
 
-        bl.setTargetPosition(pos);
-        fl.setTargetPosition(pos);
+        bl.setTargetPosition(-pos);
+        fl.setTargetPosition(-pos);
         fr.setTargetPosition(-pos);
         br.setTargetPosition(-pos);
 
@@ -118,8 +152,8 @@ public class DecodeAuto extends LinearOpMode {
 
     private void posTurnLeft (double tps, int pos) {
 
-        bl.setTargetPosition(-pos);
-        fl.setTargetPosition(-pos);
+        bl.setTargetPosition(pos);
+        fl.setTargetPosition(pos);
         fr.setTargetPosition(pos);
         br.setTargetPosition(pos);
 
@@ -139,8 +173,8 @@ public class DecodeAuto extends LinearOpMode {
 
     private void posReverse (double tps, int pos) {
 
-        bl.setTargetPosition(-pos);
-        fl.setTargetPosition(-pos);
+        bl.setTargetPosition(pos);
+        fl.setTargetPosition(pos);
         fr.setTargetPosition(-pos);
         br.setTargetPosition(-pos);
 
@@ -257,19 +291,19 @@ public class DecodeAuto extends LinearOpMode {
         fr.setPower(0);
         br.setPower(0);
 
-        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        fl.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        fr.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        br.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         runtime.reset();
     }
 
     private void enablePos() {
 
-        bl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        br.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        fl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        fr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        bl.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        br.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        fl.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        fr.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
     }
 }

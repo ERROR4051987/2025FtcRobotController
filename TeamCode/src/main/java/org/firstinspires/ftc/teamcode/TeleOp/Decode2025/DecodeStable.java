@@ -4,13 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 //lists the code as a teleop
-@TeleOp(name="DecodeTesting", group="Decode")
+@TeleOp(name="DecodeStable", group="Decode")
 
-public class DecodeTesting extends LinearOpMode {
+public class DecodeStable extends LinearOpMode {
 
     // declare drivetrain motors
     private DcMotor bl = null;
@@ -31,12 +30,12 @@ public class DecodeTesting extends LinearOpMode {
     final double diagonalStrafePower = 0.7; //diagonal strafe speed
     final double strafeScalar = 1.0; //strafing speed
     final double driveTrainScalar = 0.85; //overall movespeed
-    final double LauncherPower = 0.75;
+    final double LauncherPower = 0.7;
     final double IntakePower = 1;
 
     //declare position constants
-    final double EUSActivePos = 1;
-    final double EUSInactivePos = -1;
+    final double EUSActivePos = 0;
+    final double EUSInactivePos = 1;
 
     public void runOpMode() throws InterruptedException {
 
@@ -167,7 +166,7 @@ public class DecodeTesting extends LinearOpMode {
             }
 
             //Emergency Unsticking Service
-            if (gamepad2.left_stick_button && gamepad2.right_stick_button) {
+            if (gamepad2.right_trigger > 0) {
                 EUS.setPosition(EUSActivePos);
             } else {
                 EUS.setPosition(EUSInactivePos);
