@@ -38,8 +38,8 @@ public class DecodeAutoRedNear extends LinearOpMode {
     final double IntakePower = 1;
 
     //declare position constants
-    final double EUSActivePos = 0;
-    final double EUSInactivePos = 1;
+    final double EUSActivePos = -1;
+    final double EUSInactivePos = 0.5;
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -83,28 +83,65 @@ public class DecodeAutoRedNear extends LinearOpMode {
 
             EUS.setPosition(EUSInactivePos);
 
-            posReverse(2000,2000);
+            posReverse(2000,1250);
 
             stop(0.1);
 
-            score();
+            score2();
 
             stop(0.1);
 
-            posTurnRight(2000,1000);
+            posTurnRight(2000,500);
 
             stop(0.1);
 
-            posForward(2000,1000);
+            posForward(2000,2000);
 
             requestOpModeStop(); //stops opmode
         }
     }
 
-    private void score() {
-        launch.setPower(0.7);
+    private void score2() {
+
+        launch.setPower(0.64);
+
+        sleep(6000);
+
+        EUS.setPosition(EUSActivePos);
+
+        sleep(2000);
+
+        EUS.setPosition(EUSInactivePos);
+        launch.setPower(0.6);
+
+        sleep(1000);
+
+        LeftIntake.setPower(1);
+        RightIntake.setPower(-1);
+        Ejector.setPower(-1);
+
+        sleep(2000);
+
+        Ejector.setPower(0);
+        launch.setPower(0.635);
 
         sleep(5000);
+
+        EUS.setPosition(EUSActivePos);
+
+        sleep(2000);
+
+        LeftIntake.setPower(0);
+        RightIntake.setPower(0);
+        Ejector.setPower(0);
+        launch.setPower(0);
+        EUS.setPosition(EUSInactivePos);
+    }
+
+    private void score() {
+        launch.setPower(0.67);
+
+        sleep(6000);
 
         Ejector.setPower(-1);
         EUS.setPosition(EUSActivePos);

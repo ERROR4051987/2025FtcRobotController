@@ -38,8 +38,8 @@ public class DecodeAutoRedFar extends LinearOpMode {
     final double IntakePower = 1;
 
     //declare position constants
-    final double EUSActivePos = 0;
-    final double EUSInactivePos = 1;
+    final double EUSActivePos = -1;
+    final double EUSInactivePos = 0.5;
 
     private ElapsedTime runtime = new ElapsedTime();
 

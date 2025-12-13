@@ -38,8 +38,8 @@ public class DecodeAutoBlueFar extends LinearOpMode {
     final double IntakePower = 1;
 
     //declare position constants
-    final double EUSActivePos = 0;
-    final double EUSInactivePos = 1;
+    final double EUSActivePos = -1;
+    final double EUSInactivePos = 0.5;
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -123,6 +123,29 @@ public class DecodeAutoBlueFar extends LinearOpMode {
         launch.setPower(0);
 
         EUS.setPosition(EUSInactivePos);
+        LeftIntake.setPower(1);
+        RightIntake.setPower(-1);
+
+        sleep(3000);
+
+        LeftIntake.setPower(0);
+        RightIntake.setPower(0);
+        Ejector.setPower(0);
+        EUS.setPosition(EUSInactivePos);
+    }
+
+    private void score2() {
+        launch.setPower(0.7);
+
+        sleep(5000);
+
+        Ejector.setPower(-1);
+        EUS.setPosition(EUSActivePos);
+
+        sleep(1000);
+
+        posReverse(1000,1000);
+
         LeftIntake.setPower(1);
         RightIntake.setPower(-1);
 

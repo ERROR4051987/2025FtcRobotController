@@ -9,9 +9,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 //lists the code as a teleop
-@TeleOp(name="DecodeStable", group="Decode")
+@TeleOp(name="DecodeTesting", group="Decode")
 
-public class DecodeStable extends LinearOpMode {
+public class DecodeTesting extends LinearOpMode {
 
     // declare drivetrain motors
     private DcMotor bl = null;
@@ -38,6 +38,14 @@ public class DecodeStable extends LinearOpMode {
     //declare position constants
     final double EUSActivePos = -1;
     final double EUSInactivePos = 0.5;
+
+    //declare other variables
+    double LaunchPrevPos = 0;
+    double LaunchVel = 0;
+    String LaunchVelStr = "";
+
+    //runtime Declare
+    private ElapsedTime runtime = new ElapsedTime();
 
     public void runOpMode() throws InterruptedException {
 
@@ -69,7 +77,23 @@ public class DecodeStable extends LinearOpMode {
         //believe it or not, this waits for start
         waitForStart();
 
+        runtime.reset();
+
         while (opModeIsActive()) {
+
+            //launcher velocity telemetry
+
+            if (runtime.seconds() > 0.1) {
+                LaunchVel = launch.getCurrentPosition() - LaunchPrevPos;
+                LaunchVelStr = Double.toString(LaunchVel);
+                telemetry.addData("Vel", LaunchVelStr);
+                if (LaunchVel > 165){
+                    telemetry.addLine("Ready to Fire!");
+                }
+                telemetry.update();
+                LaunchPrevPos = launch.getCurrentPosition();
+                runtime.reset();
+            }
 
             // get controller inputs for movement
             leftPower = gamepad1.left_stick_y;
