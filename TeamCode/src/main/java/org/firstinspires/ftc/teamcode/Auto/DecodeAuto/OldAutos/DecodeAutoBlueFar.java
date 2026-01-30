@@ -1,15 +1,15 @@
-package org.firstinspires.ftc.teamcode.Auto.DecodeAuto;
+package org.firstinspires.ftc.teamcode.Auto.DecodeAuto.OldAutos;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name= "DecodeAutoRedNear", preselectTeleOp = "DecodeTesting", group = "Decode")
-public class DecodeAutoRedNear extends LinearOpMode {
+//@Autonomous(name= "DecodeAutoBlueFar", preselectTeleOp = "DecodeTesting", group = "Decode")
+public class DecodeAutoBlueFar extends LinearOpMode {
 
     // declare drivetrain motors
     private DcMotorEx bl = null;
@@ -18,19 +18,23 @@ public class DecodeAutoRedNear extends LinearOpMode {
     private DcMotorEx fr = null;
 
     //declare secondary motors
-    private DcMotorEx launch = null;
-    private DcMotorEx launch2 = null;
-    private DcMotor FrontIntake = null;
+    private DcMotor launch = null;
 
     //declare servos
-    private CRServo BackIntake = null;
+    private CRServo LeftIntake = null;
+    private CRServo RightIntake = null;
+    private CRServo Ejector = null;
+    private Servo EUS = null; //Emergency Unsticking Service
+
+    //declare sensors
+    private RevColorSensorV3 Storage = null;
 
     // declare speed constants (immutable)
     final double diagonalStrafePower = 0.7; //diagonal strafe speed
     final double strafeScalar = 1.0; //strafing speed
     final double driveTrainScalar = 0.85; //overall movespeed
-    final double LauncherPower = 1400;
-    final double IntakePower = 0.33;
+    final double LauncherPower = 0.75;
+    final double IntakePower = 1;
 
     //declare position constants
     final double EUSActivePos = -1;
@@ -46,31 +50,22 @@ public class DecodeAutoRedNear extends LinearOpMode {
         br = hardwareMap.get(DcMotorEx.class, "backRight");
         fl = hardwareMap.get(DcMotorEx.class, "frontLeft");
         fr = hardwareMap.get(DcMotorEx.class, "frontRight");
-        launch = hardwareMap.get(DcMotorEx.class, "launcher");
-        launch2 = hardwareMap.get(DcMotorEx.class,"launcher2");
-        FrontIntake = hardwareMap.get(DcMotor.class,"FrontIntake");
+        launch = hardwareMap.get(DcMotor.class, "launcher");
 
         //init servos
-        BackIntake = hardwareMap.get(CRServo.class, "BackIntake");
+        LeftIntake = hardwareMap.get(CRServo.class, "LeftIntake");
+        RightIntake = hardwareMap.get(CRServo.class, "RightIntake");
+        Ejector = hardwareMap.get(CRServo.class, "Ejector");
+        EUS = hardwareMap.get(Servo.class,"EUS");
+
+        //init sensors
+        Storage = hardwareMap.get(RevColorSensorV3.class, "StorageSensor");
 
         //set zero power behavior (crazy)
-        bl.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        br.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        fl.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        fr.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        launch.setZeroPowerBehavior((DcMotorEx.ZeroPowerBehavior.FLOAT));
-        launch2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.FLOAT);
-
-        // launcher setup
-        launch.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        launch.setVelocityPIDFCoefficients(300,0,0,17);
-        launch.setDirection(DcMotorEx.Direction.REVERSE);
-        launch2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        launch2.setVelocityPIDFCoefficients(300,0,0,17);
-        launch2.setDirection(DcMotorEx.Direction.REVERSE);
-
-        // other setup
-        FrontIntake.setDirection(DcMotorSimple.Direction.REVERSE);
+        bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // declare controller input variables (mutable)
         double leftPower;
@@ -85,26 +80,39 @@ public class DecodeAutoRedNear extends LinearOpMode {
 
             resetMotorsAndTime();
 
-            score2();
+            EUS.setPosition(EUSInactivePos);
+
+            posForward(2000,3750);
 
             stop(0.1);
 
-            posStrafeRight(2000,1000);
-
-            posTurnRight(2000,500);
+            posTurnLeft(1000,550);
 
             stop(0.1);
 
-            posForward(2000,1750);
+            posForward(2000,200);
+
+            stop(0.1);
+
+            //posReverse(1000,1000);
+
+            score();
+
+            stop(0.1);
+
+            posTurnLeft(1000,500);
+            posForward(2000,1000);
+
+            stop(0.1);
 
             requestOpModeStop(); //stops opmode
         }
     }
 
-    /* private void score() {
-        launch.setPower(0.625);
+    private void score() {
+        launch.setPower(0.7);
 
-        sleep(6000);
+        sleep(5000);
 
         Ejector.setPower(-1);
         EUS.setPosition(EUSActivePos);
@@ -119,32 +127,33 @@ public class DecodeAutoRedNear extends LinearOpMode {
 
         sleep(3000);
 
-        launch.setPower(0);
         LeftIntake.setPower(0);
         RightIntake.setPower(0);
         Ejector.setPower(0);
         EUS.setPosition(EUSInactivePos);
-    } */
+    }
 
     private void score2() {
+        launch.setPower(0.7);
 
-        launch.setVelocity(1425);
-        launch2.setVelocity(1425);
+        sleep(5000);
 
-        sleep(4000);
+        Ejector.setPower(-1);
+        EUS.setPosition(EUSActivePos);
 
-        BackIntake.setPower(1);
+        sleep(1000);
 
-        sleep(4000);
+        posReverse(1000,1000);
 
-        FrontIntake.setPower(IntakePower);
+        LeftIntake.setPower(1);
+        RightIntake.setPower(-1);
 
         sleep(3000);
 
-        FrontIntake.setPower(0);
-        BackIntake.setPower(0);
-        launch.setPower(0);
-        launch2.setPower(0);
+        LeftIntake.setPower(0);
+        RightIntake.setPower(0);
+        Ejector.setPower(0);
+        EUS.setPosition(EUSInactivePos);
     }
 
     private void posForward (double tps, int pos) {
@@ -232,8 +241,8 @@ public class DecodeAutoRedNear extends LinearOpMode {
     }
     private void posStrafeLeft (double tps, int pos) {
 
-        bl.setTargetPosition(-pos);
-        fl.setTargetPosition(pos);
+        bl.setTargetPosition(pos);
+        fl.setTargetPosition(-pos);
         fr.setTargetPosition(pos);
         br.setTargetPosition(-pos);
 
@@ -253,8 +262,8 @@ public class DecodeAutoRedNear extends LinearOpMode {
 
     private void posStrafeRight (double tps, int pos) {
 
-        bl.setTargetPosition(pos);
-        fl.setTargetPosition(-pos);
+        bl.setTargetPosition(-pos);
+        fl.setTargetPosition(pos);
         fr.setTargetPosition(-pos);
         br.setTargetPosition(pos);
 

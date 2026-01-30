@@ -1,7 +1,6 @@
-package org.firstinspires.ftc.teamcode.Auto.DecodeAuto;
+package org.firstinspires.ftc.teamcode.Auto.DecodeAuto.OldAutos;
 
 import com.qualcomm.hardware.rev.RevColorSensorV3;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name= "DecodeAutoRedFar", preselectTeleOp = "DecodeTesting", group = "Decode")
+//@Autonomous(name= "DecodeAutoRedFar", preselectTeleOp = "DecodeTesting", group = "Decode")
 public class DecodeAutoRedFar extends LinearOpMode {
 
     // declare drivetrain motors

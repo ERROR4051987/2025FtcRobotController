@@ -9,9 +9,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 //lists the code as a teleop
-//@TeleOp(name="DecodeStable", group="Decode")
+//@TeleOp(name="DecodeOld", group="Decode")
 
-public class DecodeStable extends LinearOpMode {
+public class DecodeStablePreRedesign extends LinearOpMode {
 
     // declare drivetrain motors
     private DcMotor bl = null;

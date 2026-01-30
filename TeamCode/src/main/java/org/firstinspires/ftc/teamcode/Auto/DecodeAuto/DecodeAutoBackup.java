@@ -18,6 +18,7 @@ public class DecodeAutoBackup extends LinearOpMode {
     private DcMotorEx fl = null;
     private DcMotorEx fr = null;
 
+    /*
     //declare secondary motors
     private DcMotor launch = null;
 
@@ -29,6 +30,8 @@ public class DecodeAutoBackup extends LinearOpMode {
 
     //declare sensors
     private RevColorSensorV3 Storage = null;
+    */
+
 
     // declare speed constants (immutable)
     final double diagonalStrafePower = 0.7; //diagonal strafe speed
@@ -51,16 +54,16 @@ public class DecodeAutoBackup extends LinearOpMode {
         br = hardwareMap.get(DcMotorEx.class, "backRight");
         fl = hardwareMap.get(DcMotorEx.class, "frontLeft");
         fr = hardwareMap.get(DcMotorEx.class, "frontRight");
-        launch = hardwareMap.get(DcMotor.class, "launcher");
+        //launch = hardwareMap.get(DcMotor.class, "launcher");
 
         //init servos
-        LeftIntake = hardwareMap.get(CRServo.class, "LeftIntake");
-        RightIntake = hardwareMap.get(CRServo.class, "RightIntake");
-        Ejector = hardwareMap.get(CRServo.class, "Ejector");
-        EUS = hardwareMap.get(Servo.class,"EUS");
+        //LeftIntake = hardwareMap.get(CRServo.class, "LeftIntake");
+        //RightIntake = hardwareMap.get(CRServo.class, "RightIntake");
+        //Ejector = hardwareMap.get(CRServo.class, "Ejector");
+        //EUS = hardwareMap.get(Servo.class,"EUS");
 
         //init sensors
-        Storage = hardwareMap.get(RevColorSensorV3.class, "StorageSensor");
+        //Storage = hardwareMap.get(RevColorSensorV3.class, "StorageSensor");
 
         //set zero power behavior (crazy)
         bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -81,7 +84,7 @@ public class DecodeAutoBackup extends LinearOpMode {
 
             resetMotorsAndTime();
 
-            EUS.setPosition(EUSInactivePos);
+            //EUS.setPosition(EUSInactivePos);
 
             posForward(2000,2000);
 
@@ -91,6 +94,7 @@ public class DecodeAutoBackup extends LinearOpMode {
         }
     }
 
+    /*
     private void score() {
         launch.setPower(0.75);
 
@@ -107,6 +111,7 @@ public class DecodeAutoBackup extends LinearOpMode {
         RightIntake.setPower(0);
         Ejector.setPower(0);
     }
+    */
 
     private void posForward (double tps, int pos) {
 

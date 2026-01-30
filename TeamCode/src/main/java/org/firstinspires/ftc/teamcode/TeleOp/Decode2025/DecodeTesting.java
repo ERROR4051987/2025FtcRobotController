@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -21,23 +23,18 @@ public class DecodeTesting extends LinearOpMode {
 
     //declare secondary motors
     private DcMotorEx launch = null;
+    private DcMotorEx launch2 = null;
+    private DcMotor FrontIntake = null;
 
     //declare servos
-    private CRServo LeftIntake = null;
-    private CRServo RightIntake = null;
-    private CRServo Ejector = null;
-    private Servo EUS = null; //Emergency Unsticking Service
+    private CRServo BackIntake = null;
 
     // declare speed constants (immutable)
     final double diagonalStrafePower = 0.7; //diagonal strafe speed
     final double strafeScalar = 1.0; //strafing speed
     final double driveTrainScalar = 0.85; //overall movespeed
-    final double LauncherPower = 0.7;
-    final double IntakePower = 1;
-
-    //declare position constants
-    final double EUSActivePos = -1;
-    final double EUSInactivePos = 0.5;
+    final double LauncherPower = 1400;
+    final double IntakePower = 0.33;
 
     //declare other variables
     double LaunchPrevPos = 0;
@@ -55,18 +52,30 @@ public class DecodeTesting extends LinearOpMode {
         fl = hardwareMap.get(DcMotor.class, "frontLeft");
         fr = hardwareMap.get(DcMotor.class, "frontRight");
         launch = hardwareMap.get(DcMotorEx.class, "launcher");
+        launch2 = hardwareMap.get(DcMotorEx.class,"launcher2");
+        FrontIntake = hardwareMap.get(DcMotor.class,"FrontIntake");
 
         //init servos
-        LeftIntake = hardwareMap.get(CRServo.class, "LeftIntake");
-        RightIntake = hardwareMap.get(CRServo.class, "RightIntake");
-        Ejector = hardwareMap.get(CRServo.class, "Ejector");
-        EUS = hardwareMap.get(Servo.class,"EUS");
+        BackIntake = hardwareMap.get(CRServo.class, "BackIntake");
 
         //set zero power behavior (crazy)
         bl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         br.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fl.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        launch.setZeroPowerBehavior((DcMotor.ZeroPowerBehavior.FLOAT));
+        launch2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        // launcher setup
+        launch.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        launch.setVelocityPIDFCoefficients(300,0,0,17);
+        launch.setDirection(DcMotorEx.Direction.REVERSE);
+        launch2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        launch2.setVelocityPIDFCoefficients(300,0,0,17);
+        launch2.setDirection(DcMotorEx.Direction.REVERSE);
+
+        // other setup
+        FrontIntake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // declare controller input variables (mutable)
         double leftPower;
@@ -82,7 +91,6 @@ public class DecodeTesting extends LinearOpMode {
         while (opModeIsActive()) {
 
             //launcher velocity telemetry
-
             if (runtime.seconds() > 0.1) {
                 LaunchVel = launch.getCurrentPosition() - LaunchPrevPos;
                 LaunchVelStr = Double.toString(LaunchVel);
@@ -165,56 +173,35 @@ public class DecodeTesting extends LinearOpMode {
 
             //launcher controls
             if (gamepad2.left_trigger > 0) {
-                launch.setPower(LauncherPower);
-            }else {
+                launch.setVelocity(LauncherPower);
+                launch2.setVelocity(LauncherPower);
+            } else if (gamepad2.right_trigger > 0) {
+                launch.setPower(-0.1);
+                launch2.setPower(-0.1);
+            } else {
                 launch.setPower(0);
+                launch2.setPower(0);
             }
 
             //intake controls
+            //front
             if (gamepad2.dpad_up) {
-                LeftIntake.setPower(IntakePower);
-                RightIntake.setPower(-IntakePower);
+                FrontIntake.setPower(IntakePower);
             } else if (gamepad2.dpad_down) {
-                LeftIntake.setPower(-IntakePower);
-                RightIntake.setPower(IntakePower);
+                FrontIntake.setPower(-IntakePower);
             } else {
-                LeftIntake.setPower(0);
-                RightIntake.setPower(0);
+                FrontIntake.setPower(0);
             }
-
-            //ejector controls
+            //back
             if (gamepad2.a) {
-                Ejector.setPower(-1);
+                BackIntake.setPower(1);
             } else if (gamepad2.b) {
-                Ejector.setPower(1);
+                BackIntake.setPower(-1);
             } else {
-                Ejector.setPower(0);
-            }
-
-            //Emergency Unsticking Service
-            if (gamepad2.right_trigger > 0) {
-                EUS.setPosition(EUSActivePos);
-            } else {
-                EUS.setPosition(EUSInactivePos);
+                BackIntake.setPower(0);
             }
 
         } //end bracket for loop, code after this won't run until the stop button is pressed (which breaks comp rules)
     }
 }
 
-/*
-Robot Control Documentation:
-    Gamepad 1:
-        Left Stick - Left Wheels
-        Right Stick - Right Wheels
-        Left Trigger - Strafe Left
-        Right Trigger - Strafe Right
-        D-Pad Up/Down - Diagonal Strafe Controls
-        Left/Right Bumper - Diagonal Strafe Controls
-
-    Gamepad 2:
-        Left Trigger - Rev up Launcher
-        D-Pad Up/Down - Operate Intake Servos
-        A/B - Ejector
-        Left/Right Stick Buttons - Emergency Unsticking Service
- */

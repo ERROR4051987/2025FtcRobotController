@@ -1,7 +1,6 @@
-package org.firstinspires.ftc.teamcode.Auto.DecodeAuto;
+package org.firstinspires.ftc.teamcode.Auto.DecodeAuto.OldAutos;
 
 import com.qualcomm.hardware.rev.RevColorSensorV3;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,8 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name= "DecodeAutoBlueFar", preselectTeleOp = "DecodeTesting", group = "Decode")
-public class DecodeAutoBlueFar extends LinearOpMode {
+//@Autonomous(name= "DecodeAutoRedNear", preselectTeleOp = "DecodeTesting", group = "Decode")
+public class DecodeAutoRedNear extends LinearOpMode {
 
     // declare drivetrain motors
     private DcMotorEx bl = null;
@@ -83,37 +82,65 @@ public class DecodeAutoBlueFar extends LinearOpMode {
 
             EUS.setPosition(EUSInactivePos);
 
-            posForward(2000,3750);
+            posReverse(2000,1250);
 
             stop(0.1);
 
-            posTurnLeft(1000,550);
+            score2();
 
             stop(0.1);
 
-            posForward(2000,200);
+            posTurnRight(2000,500);
 
             stop(0.1);
 
-            //posReverse(1000,1000);
-
-            score();
-
-            stop(0.1);
-
-            posTurnLeft(1000,500);
-            posForward(2000,1000);
-
-            stop(0.1);
+            posForward(2000,2000);
 
             requestOpModeStop(); //stops opmode
         }
     }
 
-    private void score() {
-        launch.setPower(0.7);
+    private void score2() {
+
+        launch.setPower(0.64);
+
+        sleep(6000);
+
+        EUS.setPosition(EUSActivePos);
+
+        sleep(2000);
+
+        EUS.setPosition(EUSInactivePos);
+        launch.setPower(0.6);
+
+        sleep(1000);
+
+        LeftIntake.setPower(1);
+        RightIntake.setPower(-1);
+        Ejector.setPower(-1);
+
+        sleep(2000);
+
+        Ejector.setPower(0);
+        launch.setPower(0.635);
 
         sleep(5000);
+
+        EUS.setPosition(EUSActivePos);
+
+        sleep(2000);
+
+        LeftIntake.setPower(0);
+        RightIntake.setPower(0);
+        Ejector.setPower(0);
+        launch.setPower(0);
+        EUS.setPosition(EUSInactivePos);
+    }
+
+    private void score() {
+        launch.setPower(0.67);
+
+        sleep(6000);
 
         Ejector.setPower(-1);
         EUS.setPosition(EUSActivePos);
@@ -128,29 +155,7 @@ public class DecodeAutoBlueFar extends LinearOpMode {
 
         sleep(3000);
 
-        LeftIntake.setPower(0);
-        RightIntake.setPower(0);
-        Ejector.setPower(0);
-        EUS.setPosition(EUSInactivePos);
-    }
-
-    private void score2() {
-        launch.setPower(0.7);
-
-        sleep(5000);
-
-        Ejector.setPower(-1);
-        EUS.setPosition(EUSActivePos);
-
-        sleep(1000);
-
-        posReverse(1000,1000);
-
-        LeftIntake.setPower(1);
-        RightIntake.setPower(-1);
-
-        sleep(3000);
-
+        launch.setPower(0);
         LeftIntake.setPower(0);
         RightIntake.setPower(0);
         Ejector.setPower(0);
